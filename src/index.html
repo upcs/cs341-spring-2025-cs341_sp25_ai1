@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mockup UI</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="toolbar">
+        <button id="toolbarBTN">☰</button>
+    </div>
+    <div class="chatBot">
+        <header>
+            <h2>Patient</h2>
+            <span alt="Close" id="exit">X</span>
+        </header>
+        <ul class="chatbox">
+            <li class="chat-incoming chat">
+                <p>Hello, Doc!</p>
+            </li>
+        </ul>
+        <div class="chat-input">
+            <textarea id="user-input" rows="0" cols="17" placeholder="Ask the patient questions..."></textarea>
+            <button id="sendBTN" onclick="send()">↑</button>
+        </div>
+    </div>
+    
+    <div id="notes">
+        <div id="notes-tab"><button id="notes-toggle-btn" type="button" onclick="toggleNotes()">Notes</button></div>
+        <div id="notes-text">
+            <textarea id="notes-text-area" placeholder="Type your notes on the patient here..."></textarea>
+        </div>
+    </div>
+    
+    <script src="script.js" defer></script>
+</body>
+
+</html>
