@@ -65,6 +65,15 @@ function toggleNotes() {
     }
 }
 
+document.querySelector('.chat-input').addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+        // call function and reset line
+        event.preventDefault();
+        handleChat();
+        chatInput.value = "";
+    }
+  });
+
 // function send() {
 //     var input = document.querySelector(".chat-input textarea");
 //     var message = input.value;
