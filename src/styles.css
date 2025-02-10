@@ -40,6 +40,8 @@ header h2 {
 }
 
 .chatbox {
+  display: flex;
+  flex-direction: column;
   padding: 15px;
   list-style: none;
   overflow-y: auto;
@@ -47,8 +49,14 @@ header h2 {
   width: 100%;
 }
 
-.chatbox li {
+.chat {
+  display: flex;
+  justify-content: flex-start;
   margin-bottom: 10px;
+}
+
+.chat-outgoing {
+  justify-content: flex-end;
 }
 
 .chat p {
@@ -58,14 +66,14 @@ header h2 {
   word-wrap: break-word;
 }
 
-.chat-outgoing p {
-  background-color: #162887;
-  align-self: flex-end;
-  color: #fff;
-}
-
 .chat-incoming p {
   background-color: #eaeaea;
+  color: #000;
+}
+
+.chat-outgoing p {
+  background-color: #4835c4;
+  color: #fff;
 }
 
 .chat-input {
