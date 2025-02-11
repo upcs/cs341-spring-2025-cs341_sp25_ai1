@@ -1,3 +1,5 @@
+const API_URL = "http://localhost:11434/api/generate";
+
 function toggleNotes() {
     var notes = document.getElementById("notes-text-area");
     if(notes.style.display === "none") {
