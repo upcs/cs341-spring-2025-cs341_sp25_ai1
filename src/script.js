@@ -8,18 +8,13 @@ let isLoading = false; //prevents multple API calls at a single time
 const createChatLI = (message, className) => {
     const chatli = document.createElement("li");
     chatli.classList.add("chat", className);
-    let chatContent = className === "incoming" ? `<p>${message}</p>` : 
-    `<span class="material-symbols-outlined">smart_toy</span><p>${message}</p>`;
+
     chatli.innerHTML = chatContent;
     return chatli;
 }
 
-const generateResponse = async (incomingChatLI) => {
-    if (isLoading) return;
-    isLoading = true;
 
     const API_URL = "http://localhost:11434/api/generate";
-    const messageElement = incomingChatLI.querySelector("p");
 
     //This prompt is for the AI to generate a response
     //As it is given to the AI right away, and the AI acts as patient.
@@ -44,33 +39,16 @@ const generateResponse = async (incomingChatLI) => {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            // "Authorization": `Bearer ${API_KEY}` 
         },
 
         body: JSON.stringify({
-            // model: "mistral", now changed to meditron!! #nvm it has been changed back to mistral
-            // messages: [{role: "user", content: userMessage}],
+
             "model": "mistral",
             "prompt": sickPrompt,
             "stream": false
         })
     }    
 
-    // send request to API and get response
-    fetch(API_URL, requestOptions)
-    .then(res => res.json())
-    .then(data => {
-        // console.log(data);
-        // get response to user
-        messageElement.textContent = data.response;
-    })
-    .catch((error) => {
-        // console.log(error);
-        messageElement.textContent = "Oops! Something went wrong, Please try again";
-    })
-    .finally(() => chatbox.scrollTo(0, chatbox.scrollHeight));
-    isLoading = false; //reset loading state
-    chatbox.scrollTop(0, chatbox.scrollHeight);
 
 }
 //Handles user input, sends message, and generates AI response
@@ -78,16 +56,16 @@ const handleChat = () => {
     userMessage = chatInput.value.trim();
     if(!userMessage) return;
 
-    chatbox.appendChild(createChatLI(userMessage, "incoming"));
+
     chatbox.scrollTo(0, chatbox.scrollHeight);
 
     setTimeout(() => {
         // thinking message while responding
-        const incomingChatLI = createChatLI("Thinking...", "incoming") 
+
         chatbox.appendChild(incomingChatLI);
         chatbox.scrollTo(0, chatbox.scrollHeight);
         generateResponse(incomingChatLI);
-    }, 600);
+    }, 300); // time to respond
 }
 
 //Event Listener for Enter key to send message
@@ -103,7 +81,6 @@ function toggleNotes() {
     const notes = document.getElementById("notes-text-area");
     notes.style.display = notes.style.display === "none" ? "block" : "none";
 }
-
 
 
 
