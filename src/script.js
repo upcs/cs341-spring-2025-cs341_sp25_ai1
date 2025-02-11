@@ -13,6 +13,7 @@ const createChatLI = (message, className) => {
 }
 
 const generateResponse = (incomingChatLI) => {
+    // to run LLM must download ollama: https://ollama.com/download and do ollama pull mistral in terminal
     const API_URL = "http://localhost:11434/api/generate";
 
     const requestOptions = {
@@ -53,7 +54,7 @@ const handleChat = () => {
         chatbox.appendChild(incomingChatLI);
         chatbox.scrollTo(0, chatbox.scrollHeight);
         generateResponse(incomingChatLI);
-    }, 600);
+    }, 300); // time to respond
 }
 
 function toggleNotes() {
@@ -65,6 +66,7 @@ function toggleNotes() {
     }
 }
 
+// when enter key is pressed message is sent
 document.querySelector('.chat-input').addEventListener('keydown', function(event) {
     if (event.key === 'Enter') {
         // call function and reset line
@@ -73,6 +75,19 @@ document.querySelector('.chat-input').addEventListener('keydown', function(event
         chatInput.value = "";
     }
   });
+
+  // shortcut key to toggle notes
+document.addEventListener("keydown", function(event) {
+        // don't toggle notes if user is in chat box
+        if (document.activeElement.matches('.chat-input textarea')) {
+            return;
+        }
+        
+        // open notes
+        if (event.key === "`") {
+            toggleNotes();
+        }
+});
 
 // function send() {
 //     var input = document.querySelector(".chat-input textarea");
