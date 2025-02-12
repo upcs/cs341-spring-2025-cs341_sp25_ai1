@@ -8,12 +8,12 @@ let isLoading = false; //prevents multple API calls at a single time
 const createChatLI = (message, className) => {
     const chatli = document.createElement("li");
     chatli.classList.add("chat", className);
-
+    let chatContent = `<p>${message}</p>`;
     chatli.innerHTML = chatContent;
     return chatli;
 }
 
-
+const generateResponse = (incomingChatLI) => {
     const API_URL = "http://localhost:11434/api/generate";
 
     //This prompt is for the AI to generate a response
@@ -49,38 +49,64 @@ const createChatLI = (message, className) => {
         })
     }    
 
+    // send request to API and get response
+    fetch(API_URL, requestOptions).then(res => res.json()).then(data => {
+        // create a new chat message for the response
+        const responseMessage = data.response;
 
+        // replace thinking with response
+        incomingChatLI.innerHTML = createChatLI(responseMessage, "chat-incoming").innerHTML;
+        chatbox.scrollTo(0, chatbox.scrollHeight); // Scroll to the bottom
+    }).catch((error) => {
+        incomingChatLI.innerHTML = "Oops! Something went wrong, Please try again";
+    }).finally(() => chatbox.scrollTo(0, chatbox.scrollHeight));
 }
-//Handles user input, sends message, and generates AI response
-const handleChat = () => {
-    userMessage = chatInput.value.trim();
-    if(!userMessage) return;
 
+    //handles user input, sends message, and generates AI response
+    const handleChat = () => {
+        userMessage = chatInput.value.trim();
+        if(!userMessage) return;
 
-    chatbox.scrollTo(0, chatbox.scrollHeight);
-
-    setTimeout(() => {
-        // thinking message while responding
-
-        chatbox.appendChild(incomingChatLI);
+        chatbox.appendChild(createChatLI(userMessage, "chat-outgoing"));
         chatbox.scrollTo(0, chatbox.scrollHeight);
-        generateResponse(incomingChatLI);
-    }, 300); // time to respond
-}
 
-//Event Listener for Enter key to send message
-chatInput.addEventListener("keydown", (event) => {
-    if(event.key === "Enter" && !event.shiftKey) {
-      event.preventDefault();
-       handleChat();
-   }
-});
+        setTimeout(() => {
+            // thinking message while responding
+            const incomingChatLI = createChatLI("Thinking...", "chat-incoming") 
+            chatbox.appendChild(incomingChatLI);
+            chatbox.scrollTo(0, chatbox.scrollHeight);
+            generateResponse(incomingChatLI);
+        }, 300); // time to respond
+    }
 
-//toggleNotes display
-function toggleNotes() {
-    const notes = document.getElementById("notes-text-area");
-    notes.style.display = notes.style.display === "none" ? "block" : "none";
-}
+    // when enter key is pressed message is sent
+    document.querySelector('.chat-input').addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            // call function and reset line
+            event.preventDefault();
+            handleChat();
+            chatInput.value = "";
+        }
+    });
+
+    // shortcut key to toggle notes
+    document.addEventListener("keydown", function(event) {
+            // don't toggle notes if user is in chat box
+            if (document.activeElement.matches('.chat-input textarea')) {
+                return;
+            }
+            
+            // open notes
+            if (event.key === "`") {
+                toggleNotes();
+            }
+    });
+
+    //toggleNotes display
+    function toggleNotes() {
+        const notes = document.getElementById("notes-text-area");
+        notes.style.display = notes.style.display === "none" ? "block" : "none";
+    }
 
 
 
