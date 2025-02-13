@@ -125,3 +125,9 @@ const generateResponse = (incomingChatLI) => {
 //     chatbox.appendChild(message);
 //     chatbox.scrollTop = chatbox.scrollHeight;
 // }
+
+
+//export gereateResponse function
+if (typeof module !== "undefined") {
+    module.exports = { generateResponse };
+}
