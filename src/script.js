@@ -125,3 +125,8 @@ const generateResponse = (incomingChatLI) => {
 //     chatbox.appendChild(message);
 //     chatbox.scrollTop = chatbox.scrollHeight;
 // }
+
+// ensures that toggleNotes function is only exported when running in a Node.js test environment :)
+if (typeof module !== "undefined") {
+    module.exports = { toggleNotes };
+}
