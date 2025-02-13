@@ -7,11 +7,10 @@ app.use(express.json());
 
 app.post('/api/generate', async (req, res) => {
     try {
-        // This matches your current frontend's expected format
+        // this matches the frontend expected format
         const { model, prompt, stream } = req.body;
         
-        // For now it just send back a test response matching the format
-        // your frontend expects
+        // for now it just send back a test response matching the format
         const response = {
             response: `Test response to: ${prompt}`
         };
@@ -22,7 +21,7 @@ app.post('/api/generate', async (req, res) => {
     }
 });
 
-const PORT = 11434;  // Using same port as in your frontend code
+const PORT = 11434;  // using same port as the frontend code
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
