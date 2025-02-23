@@ -8,7 +8,7 @@ let isLoading = false; //prevents multple API calls at a single time
 const createChatLI = (message, className) => {
     const chatli = document.createElement("li");
     chatli.classList.add("chat", className);
-    let chatContent = `<p>${message}</p>`;
+    let chatContent = `<div class="message-content">${message}</div>`;
     chatli.innerHTML = chatContent;
     return chatli;
 }
@@ -77,6 +77,7 @@ const generateResponse = (incomingChatLI) => {
             chatbox.scrollTo(0, chatbox.scrollHeight);
             generateResponse(incomingChatLI);
         }, 300); // time to respond
+        chatInput.value = "";
     }
 
     // when enter key is pressed message is sent
@@ -85,46 +86,38 @@ const generateResponse = (incomingChatLI) => {
             // call function and reset line
             event.preventDefault();
             handleChat();
-            chatInput.value = "";
         }
     });
 
-    // shortcut key to toggle notes
-    document.addEventListener("keydown", function(event) {
-            // don't toggle notes if user is in chat box
-            if (document.activeElement.matches('.chat-input textarea')) {
-                return;
-            }
-            
-            // open notes
-            if (event.key === "`") {
-                toggleNotes();
-            }
+    // keyboard shortcut for notes (backtick key)
+    document.addEventListener('keydown', (event) => {
+        if (event.key === '`' && !document.activeElement.matches('.chat-input textarea')) {
+            toggleNotes();
+        }
     });
 
-    //toggleNotes display
+    // get note elements
+    const notesBtn = document.querySelector('#notes-btn');
+    const notesPanel = document.querySelector('.notes-panel');
+    const closeNotesBtn = document.querySelector('.close-btn');
+
+    // hide or unhide notes panel
     function toggleNotes() {
-        const notes = document.getElementById("notes-text-area");
-        notes.style.display = notes.style.display === "none" ? "block" : "none";
+        notesPanel.classList.toggle('hidden');
     }
 
+    // event listeners for notes
+    notesBtn.addEventListener('click', toggleNotes);
+    closeNotesBtn.addEventListener('click', toggleNotes);
 
+    // make new log
+    const newChatBtn = document.querySelector('#new-chat-btn');
+    newChatBtn.addEventListener('click', () => {
+        // clear messages and add initial message
+        chatbox.innerHTML = '';
+        chatbox.appendChild(createChatLI("Hello!", "chat-incoming"));
+    });
 
-// function send() {
-//     var input = document.querySelector(".chat-input textarea");
-//     var message = input.value;
-//     input.value = "";
-//     if (message === "") {
-//         return;
-//     }
-//     var chatbox = document.querySelector(".chatbox");
-//     var message = document.createElement("li");
-//     message.classList.add("chat-outgoing");
-//     message.classList.add("chat");
-//     message.innerHTML = "<p>" + message + "</p>";
-//     chatbox.appendChild(message);
-//     chatbox.scrollTop = chatbox.scrollHeight;
-// }
 
 // ensures that toggleNotes function is only exported when running in a Node.js test environment :)
 if (typeof module !== "undefined") {

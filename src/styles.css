@@ -1,229 +1,178 @@
-#parent-container {
-  display: flex;
-  align-items: flex-start;
+* {
+    margin: 0;
+    padding: 0;
 }
 
 body {
-  font-family: "Poppins", sans-serif;
-  font-weight: 400;
-  font-style: normal;
-  background-color: #1e1656;
+    font-family: "Poppins", sans-serif;
+    background-color: gainsboro;
+    overflow: hidden;
 }
 
-.chatBot {
-  border: 3px solid black;
-  border-radius: 10px;
-  margin: 60px auto;
-  margin-left: 350px;
-  margin-bottom: 0;
-  overflow: hidden; /* hides scroll bar, could use maybe not */
-  width: 50%;
-  height: 70%;
-  background: white;
-  background-size: contain;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+.container {
+    display: flex;
+    height: 1000px;
 }
 
-header {
-  background-color: darkgray;
-  text-align: center;
-  padding: 10px 0;
-  border-radius: 7px 7px 0 0;
+/* sidebar */
+.sidebar {
+    width: 230px;
+    background: white;
+    padding: 16px;
 }
 
-header h2 {
-  color: #fff;
-  margin: 0;
+.sidebar-header {
+    margin-bottom: 30px;
+    border-bottom: 3px solid black;
+}
+
+.sidebar button {
+    width: 100%;
+    padding: 8px;
+    text-align: left;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 8px;
+}
+
+.new-chat-btn {
+    background: none;
+    margin-bottom: 32px;
+}
+
+.sidebar-btn {
+    background: none;
+}
+
+.sidebar-btn:hover {
+    background: gainsboro;
+}
+
+.new-chat-btn:hover {
+    background: gainsboro;
+}
+
+
+/* chat Area */
+.chat-container {
+    flex: 1;
+    display: flex;
+}
+
+.chat-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 960px;
 }
 
 .chatbox {
-  display: flex;
-  flex-direction: column;
-  padding: 15px;
-  list-style: none;
-  overflow-y: auto;
-  height: 400px;
-  width: 100%;
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
 }
 
+/* messages */
 .chat {
-  display: flex;
-  justify-content: flex-start;
-  margin-bottom: 10px;
+    display: flex;
+    margin-bottom: 16px;
 }
 
-.chat-outgoing {
-  justify-content: flex-end;
+.chat.chat-outgoing {
+    justify-content: flex-end;
 }
 
-.chat p {
-  padding: 10px;
-  border-radius: 10px;
-  max-width: 70%;
-  word-wrap: break-word;
+.message-content {
+    max-width: 80%;
+    padding: 16px;
+    border-radius: 8px;
+    background: white;
 }
 
-.chat-incoming p {
-  background-color: #eaeaea;
-  color: #000;
+.chat-outgoing .message-content {
+    background: #4835c4;
+    color: white;
 }
 
-.chat-outgoing p {
-  background-color: #4835c4;
-  color: #fff;
-  margin-right: 30px;
-}
-
+/* Input Area */
 .chat-input {
-  padding: 15px;
-  border-top: 1px solid #ccc;
-  display: flex;
-  height: 100%;
-  margin: auto;
+    padding: 16px;
+    display: flex;
+    gap: 8px;
+    background: white;
+    margin: 16px;
+    border-radius: 8px;
 }
 
 .chat-input textarea {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 7px;
-  resize: none;
-  outline: none;
-  overflow-y: none;
-  background-color: #dcdcdc85;
-  font-size: 16px;
-  color: black;
-  font-weight: 600;
-  margin-left: 15px;
-  margin-right: 15px;
-  height: 100%;
-} 
-
-#exit {
-  float: right;
-  position: relative;
-  top: -38px;
-  left: -15px;
-  cursor: pointer;
-  color: white;
-  font-weight: bolder;
-  font-size: 28px;
-}
-
-#exit:hover {
-  color: red;
-  transition: all .5s;
-}
-
-.chatbox .chat p.error {
-  color: #ffffff;
-  background-color: #ff3737e8;
+    flex: 1;
+    padding: 8px;
+    border: 1px solid gainsboro;
+    border-radius: 8px;
+    resize: none;
+    min-height: 70px;
 }
 
 #sendBTN {
-  width: 33px;
-  height: 30px;
-  padding-bottom: 3px;
-  margin-top: 15px;
-  border: 1px solid black;
-  outline: none;
-  text-align: center;
-  font-size: 20px;
-  font-weight: 600;
-  border-radius: 7px;
-  background-color: #ffffc6;
-  cursor: pointer;
-  color: black;
+    padding: 8px;
+    background: #4835c4;
+    color: white;
+    border: 2px solid black;
+    border-radius: 8px;
+    margin-top: 25px;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
 }
 
+/* jiggle button */
 #sendBTN:active {
-       transform: translateY(4px);
-       background-color: #ffff75;
+    transform: translateY(4px);
 }
 
-.lastMessage {
-  margin-top: 50px;
-  font-size: 35px;
-  font-weight: 600;
-  color: darkgreen;
-  margin-left: 550px;
+/* notes Panel */
+.notes-panel {
+    width: 380px;
+    background: white;
+    border-left: 1px solid gainsboro;
+    transition: transform 0.25s ease-in-out;
 }
 
-#toolbarBTN {
-  width: 30px;
-  height: 30px;
-  border: 1px solid #ffffc6;
-  color: black;
-  background-color: #ffffc6;
-  border-radius: 7px;
-  margin-top: 8px;
-  margin-left: 8px;
-  cursor: pointer;
+/* hide or show notes panel */
+.notes-panel.hidden {
+    transform: translateX(100%);
 }
 
-#toolbarBTN:hover {
-  background-color: #ffff75;
+.notes-header {
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid gainsboro;
 }
 
-#toolbarBTN:active {
-  transform: translateY(4px);
-  background-color: #ffff75;
+.close-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
 }
 
-#notes {
-  display: flex;
-  flex-direction: column;
-  text-align: center;
-  justify-content: center;
-  position: relative;
+.notes-content {
+    padding: 16px;
 }
 
-#notes-tab {
-  width: 100px;
-  height: 30px;
-  text-align: left;
-  transform: translate(-50%, -50%);
-  background-color: #ffffc6;
-  border-radius: 7px;
-  margin-left:100px;
-  margin-top: -15px;
+.notes-input {
+    width: 95%;
+    height: 850px;
+    padding: 8px;
+    border: 1px solid gainsboro;
+    border-radius: 8px;
+    resize: none;
 }
 
-#notes-text {
-  display: block;
-  width: 45%;
-  position: relative;
-  left: 25%;
-  transform: translate(5%, 0);
-}
-
-#notes-tab:hover {
-  background-color: #ffff75;
-}
-
-#notes-text-area:hover #notes-text{
-  display: block;
-}
-
-#notes-text-area {
-  display: none;
-  width: 500%;
-  height: 400px;
-  padding: 10px;
-  border: 1px solid black;
-  border-radius: 7px;
-  resize: none;
-  margin: 130px auto;
-}
-
-#notes-toggle-btn {
-  background: none;
-  border: none;
-  width: 100%;
-  height: 100%;
-  cursor: pointer;
-}
-
-#notes-toggle-btn:active {
-  transform: translateY(4px);
+/* scrollbar */
+.chatbox {
+    scrollbar-width: thin;
+    scrollbar-color: gainsboro;
 }
