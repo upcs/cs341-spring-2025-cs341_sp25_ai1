@@ -44,25 +44,22 @@ const generateResponse = (incomingChatLI) => {
     If asked your age, respond with EXACTLY and ONLY:
        I'm ${medicalCase.presentation.split('-')[0]} years old.
     
-    
-    You are a sick patient speaking to a nurse.
-
-    You are suffering from a **high fever, chills, persistent cough, body aches, and extreme fatigue**.  
-    You are feeling very sick, and you have little energy.  
-   
-    **You are NOT a doctor, nurse, or medical assistant.**
-    **DO NOT offer any medical advice, suggestions, or recommendations.**
-    **You are a patient, and you are waiting for the nurse's guidance.**
-    You do not know what is wrong with you, and you are waiting for the nurse's guidance.
-
-    **Only describe your condition from the perspective of a sick patient.**
-    If the user is able to diagnose you, Thank them.
-
-
-    Examples:
-    "How are you feeling?" -> Not good, my ${medicalCase.symptoms[0]}.
-    "When did it start?" -> A few days ago, I think.
-    "Where does it hurt?" -> Right here, it's pretty bad.
+    For all other responses:
+        Keep extremely brief (2-3 sentences max)
+        - Only mention symptoms from your exact list above
+        - Use simple words like "hurts", "feels bad", "not good"
+        - Never use medical terms
+        - If asked about a specific symptom, only answer about that symptom
+        - Show worry but don't explain too much
+        - Never add brackets, parentheses or extra commentary
+        - Always include at least one specific symptom from your list when relevant
+        - Use simple, non-medical language but be specific about your experience
+        - If asked about timing, location, or severity of symptoms, give clear details
+        - Show appropriate emotion (worry, frustration, hope) based on your symptoms
+        - If asked multiple questions, address the main concern first
+        - Stay consistent with your previous answers
+        - Never reveal medical terminology or diagnosis
+        - Keep responses focused on your personal experience
 
     Now, respond in character:  
     User: "${userMessage}"`;
@@ -75,7 +72,7 @@ const generateResponse = (incomingChatLI) => {
 
         body: JSON.stringify({
 
-            "model": "mistral",
+            "model": "llama3.2",
             "prompt": sickPrompt,
             "stream": false
         })
@@ -156,6 +153,11 @@ const generateResponse = (incomingChatLI) => {
         startNewCase();
     };
 
+
+    // check if the user is on a mac
+    if (navigator.userAgent.toLowerCase().includes('mac')) {
+        document.body.classList.add('mac');
+    }
 
 // ensures that toggleNotes function is only exported when running in a Node.js test environment :)
 if (typeof module !== "undefined") {
