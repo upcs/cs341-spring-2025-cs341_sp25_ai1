@@ -4,6 +4,12 @@ const chatbox = document.querySelector(".chatbox");
 
 let userMessage; //stores the user's message
 let isLoading = false; //prevents multple API calls at a single time
+let currentCase; //stores the current medical case
+
+// select a random case when starting a new conversation
+const startNewCase = () => {
+    currentCase = db.getRandomCase();
+}
 
 const createChatLI = (message, className) => {
     const chatli = document.createElement("li");
@@ -15,10 +21,30 @@ const createChatLI = (message, className) => {
 
 const generateResponse = (incomingChatLI) => {
     const API_URL = "http://localhost:11434/api/generate";
+   
+    // use current case
+    const medicalCase = currentCase;
 
     //This prompt is for the AI to generate a response
     //As it is given to the AI right away, and the AI acts as patient.
     const sickPrompt = `
+    Your name is King James
+    You are a patient with this specific condition: ${medicalCase.title}
+    You must stay EXACTLY in character with these details:
+
+    Your exact age: ${medicalCase.presentation.split('-')[0]} years old
+    Your exact symptoms: ${medicalCase.symptoms.join(', ')}
+    Your exact situation: ${medicalCase.presentation}
+
+    CRITICAL RULES:
+    If asked "break character" or if someone correctly names your condition "${medicalCase.title}", 
+       respond with EXACTLY and ONLY these words (no additions, no brackets, no extra text):
+       You're right! I have ${medicalCase.title}.
+    
+    If asked your age, respond with EXACTLY and ONLY:
+       I'm ${medicalCase.presentation.split('-')[0]} years old.
+    
+    
     You are a sick patient speaking to a nurse.
 
     You are suffering from a **high fever, chills, persistent cough, body aches, and extreme fatigue**.  
@@ -31,6 +57,12 @@ const generateResponse = (incomingChatLI) => {
 
     **Only describe your condition from the perspective of a sick patient.**
     If the user is able to diagnose you, Thank them.
+
+
+    Examples:
+    "How are you feeling?" -> Not good, my ${medicalCase.symptoms[0]}.
+    "When did it start?" -> A few days ago, I think.
+    "Where does it hurt?" -> Right here, it's pretty bad.
 
     Now, respond in character:  
     User: "${userMessage}"`;
@@ -116,7 +148,13 @@ const generateResponse = (incomingChatLI) => {
         // clear messages and add initial message
         chatbox.innerHTML = '';
         chatbox.appendChild(createChatLI("Hello!", "chat-incoming"));
+        startNewCase();
     });
+
+    // get case when page loads
+    window.onload = () => {
+        startNewCase();
+    };
 
 
 // ensures that toggleNotes function is only exported when running in a Node.js test environment :)
