@@ -43,24 +43,7 @@ const generateResponse = (incomingChatLI) => {
     
     If asked your age, respond with EXACTLY and ONLY:
        I'm ${medicalCase.presentation.split('-')[0]} years old.
-    
-    For all other responses:
-        Keep extremely brief (2-3 sentences max)
-        - Only mention symptoms from your exact list above
-        - Use simple words like "hurts", "feels bad", "not good"
-        - Never use medical terms
-        - If asked about a specific symptom, only answer about that symptom
-        - Show worry but don't explain too much
-        - Never add brackets, parentheses or extra commentary
-        - Always include at least one specific symptom from your list when relevant
-        - Use simple, non-medical language but be specific about your experience
-        - If asked about timing, location, or severity of symptoms, give clear details
-        - Show appropriate emotion (worry, frustration, hope) based on your symptoms
-        - If asked multiple questions, address the main concern first
-        - Stay consistent with your previous answers
-        - Never reveal medical terminology or diagnosis
-        - Keep responses focused on your personal experience
-
+       
     Now, respond in character:  
     User: "${userMessage}"`;
 
@@ -72,7 +55,7 @@ const generateResponse = (incomingChatLI) => {
 
         body: JSON.stringify({
 
-            "model": "llama3.2",
+            "model": "patient-sim",
             "prompt": sickPrompt,
             "stream": false
         })
