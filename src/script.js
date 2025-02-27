@@ -4,34 +4,46 @@ const chatbox = document.querySelector(".chatbox");
 
 let userMessage; //stores the user's message
 let isLoading = false; //prevents multple API calls at a single time
+let currentCase; //stores the current medical case
+
+// select a random case when starting a new conversation
+const startNewCase = () => {
+    currentCase = db.getRandomCase();
+}
 
 const createChatLI = (message, className) => {
     const chatli = document.createElement("li");
     chatli.classList.add("chat", className);
-    let chatContent = `<p>${message}</p>`;
+    let chatContent = `<div class="message-content">${message}</div>`;
     chatli.innerHTML = chatContent;
     return chatli;
 }
 
 const generateResponse = (incomingChatLI) => {
     const API_URL = "http://localhost:11434/api/generate";
+   
+    // use current case
+    const medicalCase = currentCase;
 
     //This prompt is for the AI to generate a response
     //As it is given to the AI right away, and the AI acts as patient.
     const sickPrompt = `
-    You are a sick patient speaking to a nurse.
+    Your name is King James
+    You are a patient with this specific condition: ${medicalCase.title}
+    You must stay EXACTLY in character with these details:
 
-    You are suffering from a **high fever, chills, persistent cough, body aches, and extreme fatigue**.  
-    You are feeling very sick, and you have little energy.  
-   
-    **You are NOT a doctor, nurse, or medical assistant.**
-    **DO NOT offer any medical advice, suggestions, or recommendations.**
-    **You are a patient, and you are waiting for the nurse's guidance.**
-    You do not know what is wrong with you, and you are waiting for the nurse's guidance.
+    Your exact age: ${medicalCase.presentation.split('-')[0]} years old
+    Your exact symptoms: ${medicalCase.symptoms.join(', ')}
+    Your exact situation: ${medicalCase.presentation}
 
-    **Only describe your condition from the perspective of a sick patient.**
-    If the user is able to diagnose you, Thank them.
-
+    CRITICAL RULES:
+    If asked "break character" or if someone correctly names your condition "${medicalCase.title}", 
+       respond with EXACTLY and ONLY these words (no additions, no brackets, no extra text):
+       You're right! I have ${medicalCase.title}.
+    
+    If asked your age, respond with EXACTLY and ONLY:
+       I'm ${medicalCase.presentation.split('-')[0]} years old.
+       
     Now, respond in character:  
     User: "${userMessage}"`;
 
@@ -43,7 +55,7 @@ const generateResponse = (incomingChatLI) => {
 
         body: JSON.stringify({
 
-            "model": "mistral",
+            "model": "patient-sim",
             "prompt": sickPrompt,
             "stream": false
         })
@@ -77,6 +89,7 @@ const generateResponse = (incomingChatLI) => {
             chatbox.scrollTo(0, chatbox.scrollHeight);
             generateResponse(incomingChatLI);
         }, 300); // time to respond
+        chatInput.value = "";
     }
 
     // when enter key is pressed message is sent
@@ -85,46 +98,49 @@ const generateResponse = (incomingChatLI) => {
             // call function and reset line
             event.preventDefault();
             handleChat();
-            chatInput.value = "";
         }
     });
 
-    // shortcut key to toggle notes
-    document.addEventListener("keydown", function(event) {
-            // don't toggle notes if user is in chat box
-            if (document.activeElement.matches('.chat-input textarea')) {
-                return;
-            }
-            
-            // open notes
-            if (event.key === "`") {
-                toggleNotes();
-            }
+    // keyboard shortcut for notes (backtick key)
+    document.addEventListener('keydown', (event) => {
+        if (event.key === '`' && !document.activeElement.matches('.chat-input textarea')) {
+            toggleNotes();
+        }
     });
 
-    //toggleNotes display
+    // get note elements
+    const notesBtn = document.querySelector('#notes-btn');
+    const notesPanel = document.querySelector('.notes-panel');
+    const closeNotesBtn = document.querySelector('.close-btn');
+
+    // hide or unhide notes panel
     function toggleNotes() {
-        const notes = document.getElementById("notes-text-area");
-        notes.style.display = notes.style.display === "none" ? "block" : "none";
+        notesPanel.classList.toggle('hidden');
     }
 
+    // event listeners for notes
+    notesBtn.addEventListener('click', toggleNotes);
+    closeNotesBtn.addEventListener('click', toggleNotes);
+
+    // make new log
+    const newChatBtn = document.querySelector('#new-chat-btn');
+    newChatBtn.addEventListener('click', () => {
+        // clear messages and add initial message
+        chatbox.innerHTML = '';
+        chatbox.appendChild(createChatLI("Hello!", "chat-incoming"));
+        startNewCase();
+    });
+
+    // get case when page loads
+    window.onload = () => {
+        startNewCase();
+    };
 
 
-// function send() {
-//     var input = document.querySelector(".chat-input textarea");
-//     var message = input.value;
-//     input.value = "";
-//     if (message === "") {
-//         return;
-//     }
-//     var chatbox = document.querySelector(".chatbox");
-//     var message = document.createElement("li");
-//     message.classList.add("chat-outgoing");
-//     message.classList.add("chat");
-//     message.innerHTML = "<p>" + message + "</p>";
-//     chatbox.appendChild(message);
-//     chatbox.scrollTop = chatbox.scrollHeight;
-// }
+    // check if the user is on a mac
+    if (navigator.userAgent.toLowerCase().includes('mac')) {
+        document.body.classList.add('mac');
+    }
 
 // ensures that toggleNotes function is only exported when running in a Node.js test environment :)
 if (typeof module !== "undefined") {

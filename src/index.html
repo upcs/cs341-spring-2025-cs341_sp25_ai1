@@ -9,33 +9,53 @@
 </head>
 
 <body>
-    <div class="toolbar">
-        <button id="toolbarBTN">☰</button>
-    </div>
+    <div class="container">
+        <!-- sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>AI ChatBot</h1>
+            </div>
+            <!-- emojis from https://emojipedia.org/ -->
+             <button class="new-chat-btn" id="new-chat-btn">+ New Chat</button>
+             <button class="sidebar-btn" id="notes-btn">📝 Notes</button>
+             <button class="sidebar-btn">💬 Chat History</button>
+             <button class="sidebar-btn">⚙️ Settings</button>
+        </div>
 
-    <div id="parent-container">
-    <div id="notes">
-        <div id="notes-tab"><button id="notes-toggle-btn" type="button" onclick="toggleNotes()">Notes (`)</button></div>
-        <div id="notes-text">
-            <textarea id="notes-text-area" placeholder="Type your notes on the patient here..."></textarea>
+        <!-- main chat area -->
+        <div class="chat-container">
+            <div class="chat-area">
+                <ul class="chatbox">
+                    <li class="chat-incoming chat">
+                        <div class="message-content">
+                            Hello!
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="chat-input">
+                    <textarea id="user-input" placeholder="Type your message..."></textarea>
+                    <button id="sendBTN" onclick="handleChat()">↑</button>
+                </div>
+            </div>
+
+            <!-- notes -->
+            <div class="notes-panel hidden">
+                <div class="notes-header">
+                    <h2>Notes ✏️</h2>
+                    <button class="close-btn">✕</button>
+                </div>
+
+                <div class="notes-content">
+                    <div class="notes-input-area">
+                        <textarea class="notes-input" id="notes-text-area" placeholder="Add a note..."></textarea>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-    <div class="chatBot">
-        <header>
-            <h2>Patient</h2>
-            <span alt="Close" id="exit">X</span>
-        </header>
-        <ul class="chatbox">
-            <li class="chat-incoming chat">
-                <p>Hello!</p>
-            </li>
-        </ul>
-        <div class="chat-input">
-            <textarea id="user-input" rows="0" cols="17" placeholder="Ask the patient questions..."></textarea>
-            <button id="sendBTN" onclick="handleChat()">↑</button>
-        </div>
-    </div>
+
     </div>
     <script src="script.js" defer></script>
-    </body>
+    <script src="database.js" defer></script>
+</body>
 </html>
