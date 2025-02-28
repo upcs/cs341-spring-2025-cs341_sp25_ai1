@@ -136,12 +136,6 @@ const generateResponse = (incomingChatLI) => {
         startNewCase();
     };
 
-
-    // check if the user is on a mac
-    if (navigator.userAgent.toLowerCase().includes('mac')) {
-        document.body.classList.add('mac');
-    }
-
 // ensures that toggleNotes function is only exported when running in a Node.js test environment :)
 if (typeof module !== "undefined") {
     module.exports = { toggleNotes };
