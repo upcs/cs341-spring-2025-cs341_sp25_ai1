@@ -109,7 +109,7 @@ body {
     margin: 16px;
     border-radius: 8px;
     position: fixed;
-    bottom: 16px;
+    bottom: 0px;
     left: 265px;
     right: 390px;
 }
