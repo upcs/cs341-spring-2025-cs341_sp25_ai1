@@ -3,7 +3,7 @@
  */
 
 // import toggleNotes from "./script";
-const { toggleNotes } = require("./script");
+const { toggleNotes } = require("../src/script.js");
 
 function toggle_notes_test() {
        describe("Notes Toggle", () => {
