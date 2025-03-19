@@ -4,7 +4,9 @@
     "@langchain/core": "^0.3.40",
     "@langchain/ollama": "^0.2.0",
     "cors": "^2.8.5",
-    "express": "^4.21.2",
-    "test":"jest --env=jsdom"
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
   }
 }
