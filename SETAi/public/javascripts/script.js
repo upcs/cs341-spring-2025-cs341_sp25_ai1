@@ -8,12 +8,13 @@ let currentCase; //stores the current medical case
 
 // select a random case when starting a new conversation
 const startNewCase = () => {
+    console.log("new case");
     $.post( './choose-case', { }, function (response) {
             if (response.length === 0) {
                 //if bad request throw error here
             } else {
                 // var jsonResponse = JSON.parse(response)
-                currentCase = jsonResponse.case;
+                currentCase = response.case;
             }
         }
     );

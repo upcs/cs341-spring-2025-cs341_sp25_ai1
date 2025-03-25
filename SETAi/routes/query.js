@@ -40,7 +40,7 @@ const embeddingModel = new HuggingFaceTransformersEmbeddings({
  */
 async function embedQuery(query) {
        // embed the query and store it in a variable
-       return await embedding_model.embedQuery(query);
+       return await embeddingModel.embedQuery(query);
 }      
 
 /**
@@ -93,9 +93,10 @@ async function askOllama(query, context) {
 }
 
 // express route to handle chatbot queries
-app.post("/chat", async (req, res) => {
+//app.post("/chat"
+router.post('/', async (req, res) => {
        try {
-           const { query } = req.body;
+           const { query } = req.query;
            const { collectionName } = req.body.collectionName;
    
            // 1st: retrieve relevant context from the persistent vector store
