@@ -1,5 +1,4 @@
 node_modules/
-chroma/vectorstore/
 .DS_Store
 # Logs
 logs
