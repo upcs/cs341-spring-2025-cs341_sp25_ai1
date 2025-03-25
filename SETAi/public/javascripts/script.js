@@ -12,7 +12,7 @@ const startNewCase = () => {
             if (response.length === 0) {
                 //if bad request throw error here
             } else {
-                var jsonResponse = JSON.parse(response)
+                // var jsonResponse = JSON.parse(response)
                 currentCase = jsonResponse.case;
             }
         }
