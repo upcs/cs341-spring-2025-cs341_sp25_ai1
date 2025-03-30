@@ -30,8 +30,7 @@ const createChatLI = (message, className) => {
 
 const generateResponse = (incomingChatLI) => {
     $.post( './query', {"query" : userMessage, "collectionName" : currentCase}, function (response) {
-            var res = JSON.parse(response);
-            incomingChatLI.innerHTML = createChatLI(res.reponse, "chat-incoming").innerHTML;
+            incomingChatLI.innerHTML = createChatLI(response.response, "chat-incoming").innerHTML;
             chatbox.scrollTo(0, chatbox.scrollHeight); // Scroll to the bottom
         }
     );

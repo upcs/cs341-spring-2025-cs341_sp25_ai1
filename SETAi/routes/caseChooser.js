@@ -10,7 +10,7 @@ router.post('/', function(req, res) {
     collectionName = selectCollectionName();
     
     //hardcoded-for case #1 at the moment
-    res.json({case: collectionName});
+    res.json({"case": collectionName});
 });
 
 module.exports = router;
