@@ -8,7 +8,16 @@ let currentCase; //stores the current medical case
 
 // select a random case when starting a new conversation
 const startNewCase = () => {
-    currentCase = db.getRandomCase();
+    console.log("new case");
+    $.post( './choose-case', { }, function (response) {
+            if (response.length === 0) {
+                //if bad request throw error here
+            } else {
+                // var jsonResponse = JSON.parse(response)
+                currentCase = response.case;
+            }
+        }
+    );
 }
 
 const createChatLI = (message, className) => {
@@ -20,58 +29,25 @@ const createChatLI = (message, className) => {
 }
 
 const generateResponse = (incomingChatLI) => {
-    const API_URL = "http://localhost:11434/api/generate";
-   
-    // use current case
-    const medicalCase = currentCase;
+    $.post( './query', {"query" : userMessage, "collectionName" : currentCase}, function (response) {
+            incomingChatLI.innerHTML = createChatLI(response.response, "chat-incoming").innerHTML;
+            chatbox.scrollTo(0, chatbox.scrollHeight); // Scroll to the bottom
+        }
+    );
 
-    //This prompt is for the AI to generate a response
-    //As it is given to the AI right away, and the AI acts as patient.
-    const sickPrompt = `
-    Your name is King James
-    You are a patient with this specific condition: ${medicalCase.title}
-    You must stay EXACTLY in character with these details:
 
-    Your exact age: ${medicalCase.presentation.split('-')[0]} years old
-    Your exact symptoms: ${medicalCase.symptoms.join(', ')}
-    Your exact situation: ${medicalCase.presentation}
-
-    CRITICAL RULES:
-    If asked "break character" or if someone correctly names your condition "${medicalCase.title}", 
-       respond with EXACTLY and ONLY these words (no additions, no brackets, no extra text):
-       You're right! I have ${medicalCase.title}.
-    
-    If asked your age, respond with EXACTLY and ONLY:
-       I'm ${medicalCase.presentation.split('-')[0]} years old.
-       
-    Now, respond in character:  
-    User: "${userMessage}"`;
-
-    const requestOptions = {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-
-        body: JSON.stringify({
-
-            "model": "patient-sim",
-            "prompt": sickPrompt,
-            "stream": false
-        })
-    }    
 
     // send request to API and get response
-    fetch(API_URL, requestOptions).then(res => res.json()).then(data => {
-        // create a new chat message for the response
-        const responseMessage = data.response;
+    // fetch(API_URL, requestOptions).then(res => res.json()).then(data => {
+    //     // create a new chat message for the response
+    //     const responseMessage = data.response;
 
-        // replace thinking with response
-        incomingChatLI.innerHTML = createChatLI(responseMessage, "chat-incoming").innerHTML;
-        chatbox.scrollTo(0, chatbox.scrollHeight); // Scroll to the bottom
-    }).catch((error) => {
-        incomingChatLI.innerHTML = "Oops! Something went wrong, Please try again";
-    }).finally(() => chatbox.scrollTo(0, chatbox.scrollHeight));
+    //     // replace thinking with response
+    //     incomingChatLI.innerHTML = createChatLI(responseMessage, "chat-incoming").innerHTML;
+    //     chatbox.scrollTo(0, chatbox.scrollHeight); // Scroll to the bottom
+    // }).catch((error) => {
+    //     incomingChatLI.innerHTML = "Oops! Something went wrong, Please try again";
+    // }).finally(() => chatbox.scrollTo(0, chatbox.scrollHeight));
 }
 
     //handles user input, sends message, and generates AI response
@@ -140,3 +116,7 @@ const generateResponse = (incomingChatLI) => {
 if (typeof module !== "undefined") {
     module.exports = { toggleNotes };
 }
+
+// meeting notes/feedback
+// end the sim on a more human/softer note
+// ie. provide human feedback like "thanks I'll go get my perscription" or "Could I get a seocnd opinion?"

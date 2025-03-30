@@ -1,22 +1,31 @@
 // imports
-import { Chroma } from "@langchain/community/vectorstores/chroma";
-import { HuggingFaceTransformersEmbeddings } from "@langchain/community/embeddings/huggingface_transformers";
-import { ChatOllama } from "@langchain/ollama";
+// import { Chroma } from "@langchain/community/vectorstores/chroma";
+// import { HuggingFaceTransformersEmbeddings } from "@langchain/community/embeddings/huggingface_transformers";
+// import { ChatOllama } from "@langchain/ollama";
+
+const { Chroma } = require("@langchain/community/vectorstores/chroma");
+const { HuggingFaceTransformersEmbeddings } = require("@langchain/community/embeddings/huggingface_transformers");
+const { ChatOllama } = require("@langchain/ollama");
+const { ChromaClient } = require("chromadb");
+
 
 const express = require('express'); // import express framework
 const cors = require('cors'); // import cors to enable communication between frontend and backend
 const app = express(); // create an express app instance
+
+var router = express.Router();
+var chromaClient;
 
 app.use(cors()); // enable cors to allow requests from different origins
 app.use(express.json());
 
 
 const PORT = 11434;  // Using same port as in your frontend code
-app.listen(PORT, () => {
-       console.log(`Server running on port ${PORT}`);
-});
-
-const CHROMA_PATH = "../chroma/vectorstore";
+// app.listen(PORT, () => {
+//        console.log(`Server running on port ${PORT}`);
+// });
+ 
+//const CHROMA_PATH = "../../chroma/vectorstore"; //TODO fix file path once nested projects are repaired
 const ollamaModel = "patient-sim";
 
 const embeddingModel = new HuggingFaceTransformersEmbeddings({
@@ -33,7 +42,8 @@ const embeddingModel = new HuggingFaceTransformersEmbeddings({
  */
 async function embedQuery(query) {
        // embed the query and store it in a variable
-       return await embedding_model.embedQuery(query);
+       //var realQuery = query.String();
+       return await embeddingModel.embedQuery(query);
 }      
 
 /**
@@ -43,22 +53,22 @@ async function embedQuery(query) {
  * 
  * @returns contextForLLM - the 'k' most similar chunks from the vectorstore
  */
-async function queryDB(query) {
+async function queryDB(query, collectionName) {
        // embed the query
-       const queryVector = await embedQuery(query);
+       if (typeof query === 'string' && query.length != 0) { //validation check on string
+              const queryVector = await embedQuery(query);
 
-       // load the vector store from the linux box
-       const vectorStore = await Chroma.fromExistingCollection(
-              embeddingModel,
-              {
-                     collectionName: "Case_1",          // name of the collection to load
-                     persistDirectory: CHROMA_PATH,     // path to the "on-disk" vectorstore
-              }
-       );
-       // query the colletion for the "k" most relevant chunks
-       const contextForLLM = await vectorStore.similaritySearchVectorWithScore(queryVector, 4);
+              const vectorStore = new Chroma(embeddingModel, {
+                     collectionName: collectionName,
+                     url: "http://localhost:8000"
+              });
 
-       return contextForLLM.map(([doc]) => doc.pageContent);
+              const contextForLLM = await vectorStore.similaritySearchVectorWithScore(queryVector, 4);
+
+              return contextForLLM.map(([doc]) => doc.pageContent);
+       } else {
+              return;
+       }
 }
 
 /**
@@ -86,20 +96,26 @@ async function askOllama(query, context) {
 }
 
 // express route to handle chatbot queries
-app.post("/chat", async (req, res) => {
+router.post('/', async (req, res) => {
+       console.log("Query: ", req.body);
        try {
-           const { query } = req.body;
+              const { query, collectionName } = req.body;
+       //     const { query } = req.query;
+       //     //req.body.collectionName
+       //     const { collectionName } = req.collectionName;
    
            // 1st: retrieve relevant context from the persistent vector store
-           const context = await queryDB(query);
+           const context = await queryDB(query, collectionName);
    
            // 2nd: generate an AI response using the retrieved context
-           const response = await queryOllama(query, context);
+           const response = await askOllama(query, context);
    
            res.json({ response });
    
        } catch (error) {
            console.error("Error processing request:", error);
-           res.status(500).json({ error: "Internal server error" });
+           res.status(500).json({ error: "Internal query error" });
        }
 });
+
+module.exports = router;
