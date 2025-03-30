@@ -94,9 +94,9 @@ const generateResponse = (incomingChatLI) => {
         notesPanel.classList.toggle('hidden');
     }
 
-    // event listeners for notes
-    notesBtn.addEventListener('click', toggleNotes);
-    closeNotesBtn.addEventListener('click', toggleNotes);
+    // // event listeners for notes
+    // notesBtn.addEventListener('click', toggleNotes);
+    // closeNotesBtn.addEventListener('click', toggleNotes);
 
     // make new log
     const newChatBtn = document.querySelector('#new-chat-btn');
