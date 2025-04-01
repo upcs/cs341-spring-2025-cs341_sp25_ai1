@@ -1,5 +1,7 @@
 node_modules/
 .DS_Store
+.venv/
+
 # Logs
 logs
 *.log
@@ -128,3 +130,4 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+.early.coverage
