@@ -102,3 +102,83 @@ input:checked + .slider {
 input:checked + .slider:before {
     transform: translateX(26px);
 }
+
+/* dark theme styles */
+body.dark-theme {
+    background-color: #222222;
+}
+
+body.dark-theme .sidebar {
+    background-color: var(--background-color);
+    color: white;
+}
+
+body.dark-theme .sidebar button {
+    color: white;
+}
+
+body.dark-theme .sidebar-header {
+    color: white;
+}
+
+body.dark-theme .sidebar-btn:hover {
+    background: var(--border-color);
+}
+body.dark-theme .new-chat-btn:hover {
+    background: var(--border-color);
+}
+
+body.dark-theme .message-content {
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+body.dark-theme .chat-input {
+    background-color: var(--chat-color);
+}
+
+body.dark-theme .chat-input textarea {
+    background-color: var(--chat-color);
+    color: var(--text-color);
+    border-color: var(--border-color);
+    font-size: inherit;
+}
+
+body.dark-theme .notes-panel {
+    background-color: var(--background-color);
+    color: white;
+}
+
+body.dark-theme .notes-input {
+    background-color: var(--chat-color);
+    color: var(--text-color);
+    border-color: var(--border-color);
+    font-size: inherit;
+}
+
+body.dark-theme .popup {
+    background-color: var(--background-color);
+}
+
+body.dark-theme .popup h2 {
+    color: var(--text-color);
+}
+
+body.dark-theme .control-button {
+    background-color: var(--chat-color);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+body.dark-theme .control-button:hover {
+    background-color: var(--border-color);
+}
+
+body.dark-theme span {
+    color: white;
+}
+
+/* have all text adjust to font size */
+textarea, input, button, .message-content, .notes-input, .popup h2, .font-size-display, .control-button {
+    font-size: inherit;
+}
