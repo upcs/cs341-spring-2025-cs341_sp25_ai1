@@ -151,10 +151,10 @@ body {
     overflow-y: auto;
 }
 
-/* hide or show notes panel */
+/* hide or show notes panel
 .notes-panel.hidden {
     transform: translateX(100%);
-}
+} */
 
 .notes-header {
     padding: 16px;
