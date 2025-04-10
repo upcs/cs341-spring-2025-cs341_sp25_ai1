@@ -85,6 +85,46 @@ const generateResponse = (incomingChatLI) => {
     window.onload = () => {
         startNewCase();
     };
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const notes = document.getElementById('notes-text-area');
+    
+    if (notes) {
+        // Add initial bullet point if empty
+        if (!notes.value) {
+            notes.value = '- ';
+        }
+        
+        // Handle keypresses
+        notes.addEventListener('keydown', function(e) {
+            // Dont delete first bullet point
+            if ((e.key === 'Backspace' || e.key === 'Delete') && (this.selectionStart <= 2)) {
+                e.preventDefault();
+                return;
+            }
+            
+            // new point when enter is pressed
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const pos = this.selectionStart;
+                this.value = this.value.substring(0, pos) + '\n- ' + this.value.substring(pos);
+                this.selectionStart = pos + 3;
+                this.selectionEnd = pos + 3;    
+            }
+        });
+        
+        // Check if first line needs bullet point
+        notes.addEventListener('input', function() {
+            if (!this.value.startsWith('- ')) {
+                this.value = '- ' + this.value;
+                this.selectionStart = Math.min(this.selectionStart + 2, this.value.length);
+                this.selectionEnd = this.selectionStart;
+            }
+        });
+    }
+}); 
+
 // module exports for test files
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
