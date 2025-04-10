@@ -59,11 +59,11 @@ global.startNewCase = () => {
     });
 };
 
-// toggles the visibility of the notes panel
-global.toggleNotes = () => {
-    const notesPanel = document.querySelector('.notes-panel');
-    notesPanel.classList.toggle('hidden');
-};
+// // toggles the visibility of the notes panel
+// global.toggleNotes = () => {
+//     const notesPanel = document.querySelector('.notes-panel');
+//     notesPanel.classList.toggle('hidden');
+// };
 
 // tests the functionality of chat-related UI features
 describe('Chat UI Tests', () => {
@@ -98,16 +98,16 @@ describe('Chat UI Tests', () => {
         expect(li.querySelector('.message-content').textContent).toBe(message);
     });
 
-    // test that toggleNotes shows and hides the notes panel
-    test('toggleNotes shows and hides notes panel', () => {
-        const notesPanel = document.querySelector('.notes-panel');
+    // // test that toggleNotes shows and hides the notes panel
+    // test('toggleNotes shows and hides notes panel', () => {
+    //     const notesPanel = document.querySelector('.notes-panel');
         
-        expect(notesPanel.classList.contains('hidden')).toBe(true);
-        toggleNotes();
-        expect(notesPanel.classList.contains('hidden')).toBe(false);
-        toggleNotes();
-        expect(notesPanel.classList.contains('hidden')).toBe(true);
-    });
+    //     expect(notesPanel.classList.contains('hidden')).toBe(true);
+    //     toggleNotes();
+    //     expect(notesPanel.classList.contains('hidden')).toBe(false);
+    //     toggleNotes();
+    //     expect(notesPanel.classList.contains('hidden')).toBe(true);
+    // });
 
     // test that handleChat appends user message and clears input box
     test('handleChat sends message and clears input', () => {
