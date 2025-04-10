@@ -58,10 +58,13 @@ async function queryDB(query, collectionName) {
        if (typeof query === 'string' && query.length != 0) { //validation check on string
               const queryVector = await embedQuery(query);
 
-              const vectorStore = new Chroma(embeddingModel, {
-                     collectionName: collectionName,
-                     url: "http://localhost:8000"
-              });
+              const vectorStore = new Chroma(
+                     embeddingModel,
+                     {
+                            collectionName: collectionName,
+                            url: "http://localhost:8000"
+                     }
+              );
 
               const contextForLLM = await vectorStore.similaritySearchVectorWithScore(queryVector, 4);
 
