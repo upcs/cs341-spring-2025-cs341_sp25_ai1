@@ -10,6 +10,8 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="./javascripts/script.js" defer></script>
     <script src="./javascripts/settings.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="./javascripts/share.js" defer></script>
 </head>
 
 <body>
@@ -24,6 +26,18 @@
              <!-- <button class="sidebar-btn" id="notes-btn">📝 Notes</button> -->
              <button class="sidebar-btn">💬 Chat History</button>
              <button class="sidebar-btn" id="settings-btn">⚙️ Settings</button>
+             
+             <!-- Bottom sidebar button -->
+             <div class="sidebar-bottom">
+                <button class="sidebar-btn" id="sharePdfBtn">📄 Share</button>
+                <div class="export-confirm" id="exportConfirm">
+                    <p>Generate PDF of conversation?</p>
+                    <div class="export-confirm-buttons">
+                        <button class="confirm-yes" id="confirmYes">Yes</button>
+                        <button class="confirm-no" id="confirmNo">No</button>
+                    </div>
+                </div>
+             </div>
         </div>
 
         <!-- Settings Popup -->
