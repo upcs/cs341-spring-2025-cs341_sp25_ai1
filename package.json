@@ -1,10 +1,11 @@
 {
   "name": "setai",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "test:unit": "jest --testPathPattern=./public/javascripts/tests/"
+    "test:unit": "jest --testPathPattern=./public/javascripts/tests/",
+    "test-llm": "node public/javascripts/tests/llm.test.js"
   },
   "dependencies": {
     "@huggingface/transformers": "^3.4.1",
@@ -20,7 +21,8 @@
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",
     "jquery": "^3.7.1",
-    "morgan": "~1.9.1"
+    "morgan": "~1.9.1",
+    "node-fetch": "^3.3.2"
   },
   "devDependencies": {
     "@babel/core": "^7.26.10",
