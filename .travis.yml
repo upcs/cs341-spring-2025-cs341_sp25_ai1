@@ -11,6 +11,11 @@ before_install:
   - echo 'module.exports = { InferenceSession: class {} };' > .npm-mock/onnxruntime-node/index.js
   - npm config set loglevel warn
 
+=======
+  - 18
+cache:
+  directories:
+    - node_modules
 install:
   # Install dependencies but ignore scripts to avoid onnxruntime-node issues
   - export NODE_PATH=$PWD/.npm-mock:$NODE_PATH
