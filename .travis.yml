@@ -1,8 +1,20 @@
 language: node_js
 node_js:
-  - 14
+  - 16
+cache:
+  directories:
+    - node_modules
+before_install:
+  # Create mock files to bypass problematic packages
+  - mkdir -p .npm-mock/onnxruntime-node
+  - echo '{"name":"onnxruntime-node","version":"1.0.0","main":"index.js"}' > .npm-mock/onnxruntime-node/package.json
+  - echo 'module.exports = { InferenceSession: class {} };' > .npm-mock/onnxruntime-node/index.js
+  - npm config set loglevel warn
+
 install:
-  - npm install
+  # Install dependencies but ignore scripts to avoid onnxruntime-node issues
+  - export NODE_PATH=$PWD/.npm-mock:$NODE_PATH
+  - npm install --no-package-lock --no-optional --ignore-scripts
   - npm install codecov --save-dev
 script:
   - npm test
