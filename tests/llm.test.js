@@ -1,5 +1,6 @@
-const fetch = require("node-fetch");
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 const assert = require("assert");
+
 
 const API_URL = "http://localhost:11434/api/generate"; // Update this if needed
 
@@ -31,7 +32,7 @@ async function runLLMTest(prompt) {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: "llama3",
+      model: "patient-sim",
       prompt: prompt,
       stream: false
     })
