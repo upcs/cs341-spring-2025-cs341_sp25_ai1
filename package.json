@@ -6,12 +6,27 @@
     "start": "node ./bin/www",
     "test": "jest",
     "test:unit": "jest --testPathPattern=./public/javascripts/tests/",
-    "test-llm": "node public/javascripts/tests/llm.test.js"
+    "test-llm": "node public/javascripts/tests/llm.test.js",
+    "test:coverage": "jest --coverage"
   },
   "jest": {
     "testEnvironment": "jsdom",
     "verbose": true,
-    "setupFiles": []
+    "setupFiles": [],
+    "collectCoverageFrom": [
+      "**/*.{js,jsx}",
+      "!**/node_modules/**",
+      "!**/coverage/**",
+      "!**/tests/**",
+      "!**/public/javascripts/tests/**"
+    ],
+    "coverageDirectory": "coverage",
+    "coverageReporters": [
+      "json",
+      "lcov",
+      "text",
+      "clover"
+    ]
   },
   "dependencies": {
     "@huggingface/transformers": "^3.4.1",
