@@ -5,20 +5,28 @@ document.addEventListener('DOMContentLoaded', function() {
     const confirmNo = document.getElementById('confirmNo');
     
     // Toggle export flap
-    sharePdfBtn.addEventListener('click', e => {
-        e.stopPropagation();
-        exportConfirm.classList.toggle('show');
-    });
+    sharePdfBtn.addEventListener('click', toggleExportFlap);
     
     // Close export flap when clicking elsewhere
-    document.addEventListener('click', e => {
+    document.addEventListener('click', handleOutsideClick);
+    
+    // Button handlers
+    confirmYes.addEventListener('click', handleConfirmYes);
+    confirmNo.addEventListener('click', handleConfirmNo);
+    
+    // Functions - exported at the bottom for testing
+    function toggleExportFlap(e) {
+        if (e) e.stopPropagation();
+        exportConfirm.classList.toggle('show');
+    }
+    
+    function handleOutsideClick(e) {
         if (!exportConfirm.contains(e.target) && e.target !== sharePdfBtn) {
             exportConfirm.classList.remove('show');
         }
-    });
+    }
     
-    // Button handlers
-    confirmYes.addEventListener('click', () => {
+    function handleConfirmYes() {
         const defaultName = 'chat_conversation';
         const userFileName = prompt('Enter file name', defaultName);
         
@@ -28,9 +36,11 @@ document.addEventListener('DOMContentLoaded', function() {
             saveConversationAsPdf(fileName);
         }
         exportConfirm.classList.remove('show');
-    });
+    }
     
-    confirmNo.addEventListener('click', () => exportConfirm.classList.remove('show'));
+    function handleConfirmNo() {
+        exportConfirm.classList.remove('show');
+    }
     
     // Save chat to PDF
     function saveConversationAsPdf(fileName) {
@@ -84,5 +94,16 @@ document.addEventListener('DOMContentLoaded', function() {
             filename: fileName,
             jsPDF: { orientation: 'landscape' }
         }).save();
+    }
+    
+    // Export functions for testing
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = {
+            toggleExportFlap,
+            handleOutsideClick,
+            handleConfirmYes,
+            handleConfirmNo,
+            saveConversationAsPdf
+        };
     }
 }); 
