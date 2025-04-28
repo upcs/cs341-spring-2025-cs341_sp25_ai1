@@ -47,6 +47,19 @@ SETAi is a ChatBot tool designed to simulate patient interactions based on vario
 
     node-fetch: "^3.3.2"
 
+## ⚠️Security
+
+The web application is only accessable while connected to the University of Portland wifi network. All internet traffic is tracked by the University.
+
+## Web Browser Compatability
+
+The web application has been tested with the following web browsers:
+   - Google Chrome
+   - Mozilla Firefox
+   - Safari
+
+Note: Other web browsers may not properly display page contents.
+
 ## Running the Application
 **Create the specialized LLM using Ollama**
 
@@ -103,9 +116,18 @@ npm run test
 npm run test:unit
 npm run test-llm
 ```
-**Code Coverage**
 
-[![codecov](https://codecov.io/gh/upcs/setai/branch/main/graph/badge.svg)](https://codecov.io/gh/upcs/setai/tree/codecov)
+## Known Issues
+
+**Double messaging**
+
+If the user sends a message then sends another message before the patient-sim model can generate a response then the model will only respond to the most recently sent question.
+
+## Major Fixed Issues
+
+**Response Times**
+
+The patient-sim model, derived from the llama3.2 model by Ollama, was unable to run using the GPU due to quantization restricting the GPUs usage. To fix this issue the gemma3 model was used instead. The gemma3 model supports running on the systems GPU so when creating a model from a modelfile with gemma3, the derived model is able to run on the GPU for increased response times.
 
 ## Contributing
 
