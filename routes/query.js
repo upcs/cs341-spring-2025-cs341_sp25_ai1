@@ -1,7 +1,4 @@
 // imports
-// import { Chroma } from "@langchain/community/vectorstores/chroma";
-// import { HuggingFaceTransformersEmbeddings } from "@langchain/community/embeddings/huggingface_transformers";
-// import { ChatOllama } from "@langchain/ollama";
 
 const { Chroma } = require("@langchain/community/vectorstores/chroma");
 const { HuggingFaceTransformersEmbeddings } = require("@langchain/community/embeddings/huggingface_transformers");
@@ -19,13 +16,9 @@ var chromaClient;
 app.use(cors()); // enable cors to allow requests from different origins
 app.use(express.json());
 
-
-const PORT = 11434;  // Using same port as in your frontend code
-// app.listen(PORT, () => {
-//        console.log(`Server running on port ${PORT}`);
-// });
- 
-//const CHROMA_PATH = "../../chroma/vectorstore"; //TODO fix file path once nested projects are repaired
+//Ensure this port matches with front-end
+const PORT = 11434;
+ //model name, make sure this matches the model name running on the physcial machine
 const ollamaModel = "patient-sim";
 
 const embeddingModel = new HuggingFaceTransformersEmbeddings({
