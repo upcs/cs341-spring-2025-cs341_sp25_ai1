@@ -103,6 +103,9 @@ npm run test
 npm run test:unit
 npm run test-llm
 ```
+**Code Coverage**
+
+[![codecov](https://codecov.io/gh/upcs/setai/branch/main/graph/badge.svg)](https://codecov.io/gh/upcs/setai/tree/codecov)
 
 ## Contributing
 
