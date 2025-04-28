@@ -62,3 +62,5 @@ Now, respond in character:
 PARAMETER temperature 0.7
 PARAMETER top_p 0.9
 PARAMETER num_predict 200
+
+
