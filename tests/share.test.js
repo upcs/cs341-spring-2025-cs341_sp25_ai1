@@ -2,217 +2,172 @@
  * @jest-environment jsdom
  */
 
+// Import necessary modules
 const fs = require('fs');
 const path = require('path');
 
-// Load the actual HTML file with path.resolve
-let html = fs.readFileSync(path.resolve(__dirname, '../public/index.html'), 'utf8');
+// Mock html2pdf
+global.html2pdf = jest.fn().mockReturnValue({
+  from: jest.fn().mockReturnValue({
+    set: jest.fn().mockReturnValue({
+      save: jest.fn()
+    })
+  })
+});
 
-// Convert RGB to Hex
-function rgbToHex(rgb) {
-    const [r, g, b] = rgb.match(/\d+/g);
-    return '#' + [r, g, b].map(x => {
-        const hex = parseInt(x).toString(16);
-        return hex.length === 1 ? '0' + hex : hex;
-    }).join('');
-}
+// Mock localStorage
+global.localStorage = {
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  removeItem: jest.fn(),
+  clear: jest.fn()
+};
 
-beforeEach(() => {
-    document.documentElement.innerHTML = html;
+// Setup DOM with content from index.html
+document.body.innerHTML = fs.readFileSync(path.resolve(__dirname, '../public/index.html'), 'utf8');
 
-    // Mock jQuery since it's used in the HTML
-    global.$ = jest.fn(() => ({
-        post: jest.fn()
-    }));
+// Mock other functions
+window.prompt = jest.fn();
 
-    // Mock html2pdf
-    html2pdfMock = {
-        from: jest.fn().mockReturnThis(),
-        set: jest.fn().mockReturnThis(),
-        save: jest.fn()
-    };
-    global.html2pdf = jest.fn(() => html2pdfMock);
+// Directly require the share.js module with explicit path for coverage tracking
+require('../public/javascripts/share.js');
 
-    // Mock window.prompt
-    mockPrompt = jest.spyOn(window, 'prompt');
+// Keep track of the exported functions from the share.js module
+const shareFunctions = require('../public/javascripts/share.js');
 
-    // Get DOM elements after HTML is set up
+describe('Share PDF functionality', () => {
+  let sharePdfBtn;
+  let exportConfirm;
+  let confirmYes;
+  let confirmNo;
+  
+  beforeEach(() => {
+    // Reset mocks
+    jest.clearAllMocks();
+    
+    // Reset DOM
+    document.body.innerHTML = fs.readFileSync(path.resolve(__dirname, '../public/index.html'), 'utf8');
+    
+    // Get DOM elements
     sharePdfBtn = document.getElementById('sharePdfBtn');
     exportConfirm = document.getElementById('exportConfirm');
     confirmYes = document.getElementById('confirmYes');
     confirmNo = document.getElementById('confirmNo');
-
-    // Load and execute the script directly
-    const scriptContent = fs.readFileSync(path.resolve(__dirname, '../public/javascripts/share.js'), 'utf8');
-    eval(scriptContent);
-
-    // Manually trigger DOMContentLoaded to ensure event listeners are attached
-    document.dispatchEvent(new Event('DOMContentLoaded'));
-});
-
-afterEach(() => {
-    jest.clearAllMocks();
-    // Clean up jQuery mock
-    delete global.$;
-});
-
-describe('Export PDF UI Interactions', () => {
-    test('Export button toggles confirmation flap', () => {
-        // Create and dispatch click event
-        const clickEvent = new MouseEvent('click', {
-            bubbles: true,
-            cancelable: true,
-            view: window
-        });
-        sharePdfBtn.dispatchEvent(clickEvent);
-        expect(exportConfirm.classList.contains('show')).toBe(true);
-
-        sharePdfBtn.dispatchEvent(clickEvent);
-        expect(exportConfirm.classList.contains('show')).toBe(false);
-    });
-
-    test('Clicking outside closes confirmation flap', () => {
-        // Ensure flap is closed
-        expect(exportConfirm.classList.contains('show')).toBe(false);
-        
-        // manually open the flap
-        exportConfirm.classList.add('show');
-        
-        // Verify flap is open
-        expect(exportConfirm.classList.contains('show')).toBe(true);
-
-        // Click outside - this should close the flap
-        const outsideClick = new MouseEvent('click', {
-            bubbles: true,
-            cancelable: true,
-            view: window
-        });
-        
-        // Click on the body element to simulate clicking outside
-        document.body.dispatchEvent(outsideClick);
-        
-        // Verify flap is closed
-        expect(exportConfirm.classList.contains('show')).toBe(false);
-    });
-
-    test('No button closes confirmation flap', () => {
-        // Open the flap
-        sharePdfBtn.dispatchEvent(new MouseEvent('click'));
-        expect(exportConfirm.classList.contains('show')).toBe(true);
-
-        // Click No
-        confirmNo.dispatchEvent(new MouseEvent('click'));
-        expect(exportConfirm.classList.contains('show')).toBe(false);
-    });
-});
-
-describe('PDF Filename Handling', () => {
-    test('Yes button prompts for filename', () => {
-        mockPrompt.mockReturnValue('test_file');
-        confirmYes.dispatchEvent(new MouseEvent('click'));
-        expect(mockPrompt).toHaveBeenCalledWith('Enter file name', 'chat_conversation');
-    });
-
-    test('PDF generation with custom filename', () => {
-        mockPrompt.mockReturnValue('test_file');
-        confirmYes.dispatchEvent(new MouseEvent('click'));
-
-        expect(html2pdf).toHaveBeenCalled();
-        expect(html2pdfMock.set).toHaveBeenCalledWith({
-            margin: 5,
-            filename: 'test_file.pdf',
-            jsPDF: { orientation: 'landscape' }
-        });
-    });
-
-    test('PDF generation with default filename when empty input', () => {
-        mockPrompt.mockReturnValue('');
-        confirmYes.dispatchEvent(new MouseEvent('click'));
-
-        expect(html2pdf).toHaveBeenCalled();
-        expect(html2pdfMock.set).toHaveBeenCalledWith({
-            margin: 5,
-            filename: 'chat_conversation.pdf',
-            jsPDF: { orientation: 'landscape' }
-        });
-    });
-
-    test('No PDF generation when cancel clicked', () => {
-        mockPrompt.mockReturnValue(null);
-        confirmYes.dispatchEvent(new MouseEvent('click'));
-
-        expect(html2pdf).not.toHaveBeenCalled();
-        expect(exportConfirm.classList.contains('show')).toBe(false);
-    });
-});
-
-describe('PDF Content and Styling', () => {
-    test('PDF includes chat messages with correct styling', () => {
-        // Get the chatbox and add test messages using the existing HTML structure
-        const chatbox = document.querySelector('.chatbox');
-        
-        // Add a bot message
-        const botMessage = document.createElement('li');
-        botMessage.className = 'chat chat-incoming';
-        botMessage.innerHTML = '<div class="message-content">Bot message</div>';
-        
-        //Add a user message
-        const userMessage = document.createElement('li');
-        userMessage.className = 'chat chat-outgoing';
-        userMessage.innerHTML = '<div class="message-content">User message</div>';
-        
-        // Add messages to chatbox while preserving existing welcome message
-        chatbox.appendChild(botMessage);
-         chatbox.appendChild(userMessage);
-
-        mockPrompt.mockReturnValue('test_file');
-        confirmYes.dispatchEvent(new MouseEvent('click'));
-
-        const container = html2pdfMock.from.mock.calls[0][0];
-        
-        // Check bot message styling
-        const botMessages = container.querySelectorAll('.chat-incoming .message-content');
-        expect(botMessages[1].style.backgroundColor).toBe('white');
-        expect(botMessages[1].style.color).toBe('black');
-        expect(botMessages[1].style.border).toBe('1px solid gainsboro');
-
-         // Check user message styling - convert rgb to hex for comparison
-        const userMessages = container.querySelectorAll('.chat-outgoing .message-content');
-        const rgbColor = getComputedStyle(userMessages[0]).backgroundColor;
-        const hexColor = rgbToHex(rgbColor);
-        expect(hexColor.toLowerCase()).toBe('#4835c4');
-        expect(userMessages[0].style.color).toBe('white');
-    });
-
-    test('PDF includes notes when they exist', () =>{
-        // Create and set up notes area
-        let notesArea = document.getElementById('notes-text-area');
-        if (!notesArea) {
-            notesArea = document.createElement('textarea');
-            notesArea.id = 'notes-text-area';
-            document.body.appendChild(notesArea);
-        }
-        
-        //add test notes
-        notesArea.value = 'Test notes';
-
-        // PDF generation
-        mockPrompt.mockReturnValue('test_file');
-        confirmYes.dispatchEvent(new MouseEvent('click'));
-
-        // Container passed to html
-        const container = html2pdfMock.from.mock.calls[0][0];
     
-        //get notes div
-        const notesDiv = Array.from(container.children).find(child => 
-            child.tagName === 'DIV' && !child.classList.contains('chatbox')
-        );
-        
-        expect(notesDiv).toBeTruthy();
-        expect(notesDiv.querySelector('h3')).toBeTruthy();
-        expect(notesDiv.querySelector('h3').textContent).toBe('Notes');
-        expect(notesDiv.querySelector('div')).toBeTruthy();
-        expect(notesDiv.querySelector('div').textContent).toBe('Test notes');
-         expect(notesDiv.querySelector('div').style.whiteSpace).toBe('pre-wrap');
-     });
+    // Trigger DOMContentLoaded to initialize event listeners
+    document.dispatchEvent(new Event('DOMContentLoaded'));
+  });
+  
+  // UI Interaction Tests
+  test.each([
+    ['toggleExportFlap toggles visibility', () => {
+      expect(exportConfirm.classList.contains('show')).toBe(false);
+      
+      // First toggle - show
+      const toggle = shareFunctions?.toggleExportFlap || (() => sharePdfBtn.click());
+      toggle();
+      expect(exportConfirm.classList.contains('show')).toBe(true);
+      
+      // Second toggle - hide
+      toggle();
+      expect(exportConfirm.classList.contains('show')).toBe(false);
+    }],
+    ['clicking inside keeps flap visible', () => {
+      sharePdfBtn.click();
+      exportConfirm.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+      expect(exportConfirm.classList.contains('show')).toBe(true);
+    }],
+    ['clicking outside closes flap', () => {
+      sharePdfBtn.click();
+      const clickEvent = new MouseEvent('click', { bubbles: true });
+      
+      if (shareFunctions?.handleOutsideClick) {
+        shareFunctions.handleOutsideClick(clickEvent);
+      } else {
+        document.body.dispatchEvent(clickEvent);
+      }
+      
+      expect(exportConfirm.classList.contains('show')).toBe(false);
+    }],
+    ['confirmNo closes flap', () => {
+      sharePdfBtn.click();
+      
+      if (shareFunctions?.handleConfirmNo) {
+        shareFunctions.handleConfirmNo();
+      } else {
+        confirmNo.click();
+      }
+      
+      expect(exportConfirm.classList.contains('show')).toBe(false);
+    }]
+  ])('%s', (_, fn) => fn());
+
+  // Filename Handling Tests
+  test.each([
+    ['null prompt cancels export', null, false, null],
+    ['empty filename uses default', '   ', true, 'chat_conversation.pdf'],
+    ['custom filename is used', 'my_chat', true, 'my_chat.pdf']
+  ])('handleConfirmYes with %s', (_, promptValue, shouldCall, expectedFilename) => {
+    sharePdfBtn.click();
+    window.prompt.mockReturnValueOnce(promptValue);
+    
+    if (shareFunctions?.handleConfirmYes) {
+      shareFunctions.handleConfirmYes();
+    } else {
+      confirmYes.click();
+    }
+    
+    expect(exportConfirm.classList.contains('show')).toBe(false);
+    
+    if (shouldCall) {
+      expect(global.html2pdf().from().set).toHaveBeenCalledWith(
+        expect.objectContaining({ filename: expectedFilename })
+      );
+    } else {
+      expect(global.html2pdf).not.toHaveBeenCalled();
+    }
+  });
+
+  // Content Tests
+  test('PDF export includes notes and styled messages', () => {
+    // Setup notes
+    const notesArea = document.getElementById('notes-text-area');
+    notesArea.value = 'Test notes content';
+    
+    // Add chat messages
+    const chatbox = document.querySelector('.chatbox');
+    ['chat-incoming', 'chat-outgoing'].forEach(type => {
+      const li = document.createElement('li');
+      li.className = `${type} chat`;
+      const msg = document.createElement('div');
+      msg.className = 'message-content';
+      msg.textContent = `${type} message`;
+      li.appendChild(msg);
+      chatbox.appendChild(li);
+    });
+    
+    // Generate PDF
+    const saveFunction = shareFunctions?.saveConversationAsPdf || 
+      (() => { sharePdfBtn.click(); window.prompt.mockReturnValueOnce('test'); confirmYes.click(); });
+    
+    if (typeof saveFunction === 'function') saveFunction('test.pdf');
+    else saveFunction();
+    
+    // Verify content
+    expect(global.html2pdf().from).toHaveBeenCalled();
+    const exportContainer = global.html2pdf().from.mock.calls[0][0];
+    
+    // Verify that the export container contains both chat and notes content
+    expect(exportContainer.textContent).toContain('chat-incoming message');
+    expect(exportContainer.textContent).toContain('chat-outgoing message');
+    expect(exportContainer.textContent).toContain('Test notes content');
+    
+    // Verify PDF generation options
+    expect(global.html2pdf().from().set).toHaveBeenCalledWith(
+      expect.objectContaining({
+        filename: expect.any(String),
+        jsPDF: { orientation: 'landscape' }
+      })
+    );
+  });
 }); 

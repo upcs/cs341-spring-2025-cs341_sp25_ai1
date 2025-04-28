@@ -5,13 +5,34 @@
   "scripts": {
     "start": "node ./bin/www",
     "test": "jest",
-    "test:unit": "jest --testPathPattern=./public/javascripts/tests/",
-    "test-llm": "node public/javascripts/tests/llm.test.js"
+    "test:unit": "jest",
+    "test-llm": "node public/javascripts/tests/llm.test.js",
+    "test:coverage": "jest --coverage"
   },
   "jest": {
     "testEnvironment": "jsdom",
     "verbose": true,
-    "setupFiles": []
+    "setupFiles": [],
+    "collectCoverageFrom": [
+      "app.js",
+      "routes/**/*.js",
+      "public/javascripts/**/*.js",
+      "!**/node_modules/**",
+      "!**/coverage/**"
+    ],
+    "testMatch": [
+      "**/tests/**/*.test.js",
+      "**/public/javascripts/tests/**/*.test.js"
+    ],
+    "coverageDirectory": "coverage",
+    "coverageReporters": [
+      "json",
+      "json-summary",
+      "lcov",
+      "text",
+      "text-summary",
+      "clover"
+    ]
   },
   "dependencies": {
     "@huggingface/transformers": "^3.4.1",
@@ -27,14 +48,17 @@
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",
     "jquery": "^3.7.1",
+    "jspdf": "^2.5.2",
     "morgan": "~1.9.1",
     "node-fetch": "^3.3.2"
   },
   "devDependencies": {
-      "@babel/core": "^7.26.10",
+    "@babel/core": "^7.26.10",
     "@babel/preset-env": "^7.26.9",
     "babel-jest": "^29.7.0",
+    "istanbul-lib-instrument": "^6.0.3",
     "jest": "^29.7.0",
-    "jest-environment-jsdom": "^29.7.0"
+    "jest-environment-jsdom": "^29.7.0",
+    "supertest": "^7.1.0"
   }
 }
