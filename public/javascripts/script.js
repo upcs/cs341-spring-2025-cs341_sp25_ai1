@@ -1,22 +1,26 @@
+//UI selectors for manipulating content in-code
 const sendChatbtn = document.querySelector(".chat-input button");
 const chatInput = document.querySelector(".chat-input textarea");
 const chatbox = document.querySelector(".chatbox");
 let userMessage; //stores the user's message
 let isLoading = false; //prevents multple API calls at a single time
 let currentCase; //stores the current medical case
-// select a random case when starting a new conversation
+
+// start new case should be called when a new random case is needed
+//makes a simple post request 
 const startNewCase = () => {
     console.log("new case");
     $.post( './choose-case', { }, function (response) {
             if (response.length === 0) {
-                //if bad request throw error here
+                //TODO throw error here
             } else {
-                // var jsonResponse = JSON.parse(response)
                 currentCase = response.case;
             }
         }
     );
 }
+
+//creates a new html list element in the chat-box, which has a class specified by the caller
 const createChatLI = (message, className) => {
     const chatli = document.createElement("li");
     chatli.classList.add("chat", className);
@@ -24,7 +28,10 @@ const createChatLI = (message, className) => {
     chatli.innerHTML = chatContent;
     return chatli;
 }
+
+//use the incoming chat from the user window to query the express server
 const generateResponse = (incomingChatLI) => {
+    //this post request sends a JSON object with the user content query as well as the current active case as strings
     $.post( './query', {"query" : userMessage, "collectionName" : currentCase}, function (response) {
             incomingChatLI.innerHTML = createChatLI(response.response, "chat-incoming").innerHTML;
             chatbox.scrollTo(0, chatbox.scrollHeight); // Scroll to the bottom
@@ -69,10 +76,6 @@ const generateResponse = (incomingChatLI) => {
         notesPanel.classList.toggle('hidden');
     }
 
-    // // event listeners for notes
-    // notesBtn.addEventListener('click', toggleNotes);
-    // closeNotesBtn.addEventListener('click', toggleNotes);
-
     // make new log
     const newChatBtn = document.querySelector('#new-chat-btn');
     newChatBtn.addEventListener('click', () => {
@@ -81,12 +84,13 @@ const generateResponse = (incomingChatLI) => {
         chatbox.appendChild(createChatLI("Hello!", "chat-incoming"));
         startNewCase();
     });
+
     // get case when page loads
     window.onload = () => {
         startNewCase();
     };
 
-
+//evet listener code
 document.addEventListener('DOMContentLoaded', function() {
     const notes = document.getElementById('notes-text-area');
     
